@@ -30,4 +30,6 @@ public class Course {
 
     @Column(columnDefinition = "varchar(500) default null")
     private String image;
+
+    private Boolean status = true;
 }

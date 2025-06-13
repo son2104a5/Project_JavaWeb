@@ -1,4 +1,4 @@
-package com.data.repository;
+package com.data.repository.students;
 
 import com.data.dto.StudentDTO;
 import com.data.entity.Student;
@@ -31,11 +31,13 @@ public class StudentRepositoryImpl implements StudentRepository {
     }
 
     @Override
-    public Student findStudentByUsername(String username) {
+    public Student findStudentByUsernameOrEmail(String username, String email) {
         try {
-            return em.createQuery("SELECT s FROM Student s WHERE s.username = :username", Student.class)
-                     .setParameter("username", username)
-                     .getSingleResult();
+            return em.createQuery(
+                            "SELECT s FROM Student s WHERE s.username = :username OR s.email = :email", Student.class)
+                    .setParameter("username", username)
+                    .setParameter("email", email)
+                    .getSingleResult();
         } catch (Exception e) {
             return null;
         }
@@ -44,6 +46,7 @@ public class StudentRepositoryImpl implements StudentRepository {
     @Override
     public StudentDTO save(StudentDTO studentDTO) {
         Student student = modelMapper.map(studentDTO, Student.class);
+        student.setImage("https://i.pinimg.com/736x/8f/1c/a2/8f1ca2029e2efceebd22fa05cca423d7.jpg");
         em.persist(student);
         return modelMapper.map(student, StudentDTO.class);
     }

@@ -1,0 +1,49 @@
+<body th:fragment="header" class="shadow">
+<header class="bg-white flex items-center justify-between px-6 py-3">
+    <!-- Logo -->
+    <img src="https://res.cloudinary.com/dagw0iovq/image/upload/v1749717954/a710yrmvpyeruqiezbbz.png"
+         alt="logo" width="126" height="45" style="margin-left: 83px">
+
+    <!-- Search input -->
+    <input type="search" style="width: 1092px"
+           class="border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+           placeholder="Type to search">
+
+    <!-- Icons & Profile -->
+    <div class="flex items-center gap-4">
+        <!-- Email icon with badge -->
+        <div class="relative">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-gray-600" fill="none"
+                 viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8m0 8a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h14a2 2 0 012 2z"/>
+            </svg>
+            <span
+                    class="absolute -top-1 -right-1 bg-purple-600 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">2</span>
+        </div>
+
+        <!-- Bell icon -->
+        <div>
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-gray-600" fill="none"
+                 viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+            </svg>
+        </div>
+
+        <!-- Avatar -->
+        <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="avatar"
+             class="w-8 h-8 rounded-full border border-gray-300">
+
+        <!-- Logout -->
+        <a href="" class="text-gray-600 hover:text-red-500 flex items-center gap-1">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none"
+                 viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1m0-10V5m0 4h-3"/>
+            </svg>
+            Logout
+        </a>
+    </div>
+</header>
+</body>

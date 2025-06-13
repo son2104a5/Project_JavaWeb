@@ -44,4 +44,10 @@ public class Student {
 
     @Column(nullable = false)
     private Boolean role;
+
+    @Column(name = "status", columnDefinition = "boolean default true")
+    private Boolean status = true;
+
+    @Column(name = "image", columnDefinition = "varchar(500) default null")
+    private String image;
 }

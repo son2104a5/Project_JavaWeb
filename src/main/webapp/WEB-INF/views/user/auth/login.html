@@ -1,10 +1,39 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Đăng nhập</title>
+    <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
+<form th:action="@{/user/login}" method="post" th:object="${student}" class="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
+    <h2 class="text-2xl font-bold mb-6 text-center text-gray-800">Đăng nhập</h2>
 
+    <div class="mb-4">
+        <label for="username" class="block text-gray-700 font-semibold mb-1">Tên đăng nhập:</label>
+        <input type="text" id="username" th:field="*{username}"
+               class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+               placeholder="Nhập tên đăng nhập">
+    </div>
+
+    <div class="mb-6">
+        <label for="password" class="block text-gray-700 font-semibold mb-1">Mật khẩu:</label>
+        <input type="password" id="password" th:field="*{password}"
+               class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+               placeholder="Nhập mật khẩu">
+    </div>
+
+    <div class="mb-6 text-center text-gray-600">
+        Chưa có tài khoản?
+        <a th:href="@{user/register}" class="text-blue-500 hover:underline font-semibold">Đăng kí ngay!</a>
+    </div>
+
+    <div>
+        <button type="submit"
+                class="w-full bg-blue-600 text-white font-bold py-3 rounded hover:bg-blue-700 transition duration-300">
+            Đăng nhập
+        </button>
+    </div>
+</form>
 </body>
 </html>
