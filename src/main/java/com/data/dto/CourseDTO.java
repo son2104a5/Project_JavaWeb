@@ -22,9 +22,9 @@ public class CourseDTO {
 
     private LocalDate createdAt = LocalDate.now();
 
-    private MultipartFile image;
+    private MultipartFile imageFile;
 
     private Boolean status = true;
 
-    private String imageUrl;
+    private String image;
 }

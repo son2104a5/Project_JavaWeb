@@ -1,10 +1,25 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-
-</body>
-</html>
+<header class="flex justify-between items-center p-4 bg-white shadow" th:fragment="header">
+    <img src="https://res.cloudinary.com/dagw0iovq/image/upload/v1749717954/a710yrmvpyeruqiezbbz.png"
+         alt="logo" width="126" height="45" style="margin-left: 83px">
+    <div class="flex items-center space-x-6 gap-10">
+        <a href="#" class="hover:text-blue-400 text-2xl">List Course</a>
+        <a href="#" class="hover:text-blue-400 text-2xl">Enrollments</a>
+        <a href="#" class="hover:text-blue-400 text-2xl">Profile</a>
+    </div>
+    <nav class="flex items-center space-x-6">
+        <div class="relative">
+            <i class="fa-regular fa-bell text-xl"></i>
+        </div>
+        <div class="w-8 h-8 rounded-full overflow-hidden border border-gray-300">
+            <img src="https://i.pravatar.cc/40" alt="avatar" class="w-full h-full object-cover">
+        </div>
+        <div class="flex items-center space-x-2 text-gray-600 hover:text-red-500">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none"
+                 viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1m0-10V5m0 4h-3"/>
+            </svg>
+            <a href="/user/logout" class="text-gray-600 text-sm hover:text-red-500">Logout</a>
+        </div>
+    </nav>
+</header>

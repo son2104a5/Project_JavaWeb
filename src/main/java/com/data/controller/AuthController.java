@@ -40,7 +40,7 @@ public class AuthController {
         }
         studentDTO.setRole(true);
         studentService.save(studentDTO);
-        return "/admin/auth/login";
+        return "redirect:/admin/login";
     }
 
     @GetMapping("/admin/logout")
@@ -90,7 +90,7 @@ public class AuthController {
         }
         studentDTO.setRole(false);
         studentService.save(studentDTO);
-        return "/user/auth/login";
+        return "redirect:/user/login";
     }
 
     @GetMapping("/user/login")
@@ -110,12 +110,12 @@ public class AuthController {
             return "/user/auth/login";
         }
         session.setAttribute("user", loginDTO);
-        return "redirect:/user/home";
+        return "redirect:/home";
     }
 
     @GetMapping("/user/logout")
     public String logoutUser(Model model, HttpSession session) {
         session.removeAttribute("user");
-        return "/user/auth/login";
+        return "redirect:/user/login";
     }
 }

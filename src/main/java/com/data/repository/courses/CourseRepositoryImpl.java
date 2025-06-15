@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
 import java.util.List;
 
@@ -21,11 +22,48 @@ public class CourseRepositoryImpl implements CourseRepository {
     private ModelMapper modelMapper;
 
     @Override
-    public List<Course> getCourses(int page, int size) {
-        return em.createQuery("SELECT c FROM Course c", Course.class)
-                .setFirstResult(page * size)
+    public List<Course> getCourses(int page, int size, String name, String status, String sort) {
+        StringBuilder jpql = new StringBuilder("SELECT c FROM Course c WHERE 1=1");
+        if (name != null && !name.trim().isEmpty()) {
+            jpql.append(" AND LOWER(c.name) LIKE :name");
+        }
+        if (status != null) {
+            jpql.append(" AND c.status = :status");
+        } else {
+            jpql.append(" AND c.status = true");
+        }
+        if (sort != null) {
+            switch (sort) {
+                case "id_asc":
+                    jpql.append(" ORDER BY c.id ASC");
+                    break;
+                case "id_desc":
+                    jpql.append(" ORDER BY c.id DESC");
+                    break;
+                case "name_asc":
+                    jpql.append(" ORDER BY c.name ASC");
+                    break;
+                case "name_desc":
+                    jpql.append(" ORDER BY c.name DESC");
+                    break;
+            }
+        }
+
+        TypedQuery<Course> query = em.createQuery(jpql.toString(), Course.class);
+        if (name != null && !name.trim().isEmpty()) {
+            query.setParameter("name", "%" + name.toLowerCase() + "%");
+        }
+        if (status != null) {
+            query.setParameter("status", Boolean.parseBoolean(status));
+        }
+        return query.setFirstResult(page * size)
                 .setMaxResults(size)
                 .getResultList();
+    }
+
+    @Override
+    public List<Course> findCoursesByName(String name, int page, int size) {
+        return getCourses(page, size, name, null, null);
     }
 
     @Override
@@ -35,15 +73,6 @@ public class CourseRepositoryImpl implements CourseRepository {
             return modelMapper.map(course, CourseDTO.class);
         }
         return null;
-    }
-
-    @Override
-    public List<Course> findCoursesByName(String name, int page, int size) {
-        return em.createQuery("SELECT c FROM Course c WHERE LOWER(c.name) LIKE :name", Course.class)
-                .setParameter("name", "%" + name.toLowerCase() + "%")
-                .setFirstResult(page * size)
-                .setMaxResults(size)
-                .getResultList();
     }
 
     @Override
@@ -60,6 +89,7 @@ public class CourseRepositoryImpl implements CourseRepository {
             course.setInstructor(courseDTO.getInstructor());
             course.setDuration(courseDTO.getDuration());
             course.setStatus(courseDTO.getStatus());
+            course.setImage(courseDTO.getImage());
             em.merge(course);
         }
     }
@@ -105,23 +135,36 @@ public class CourseRepositoryImpl implements CourseRepository {
     }
 
     @Override
-    public long countCourses() {
-        return em.createQuery("SELECT COUNT(c) FROM Course c", Long.class).getSingleResult();
+    public long countCourses(String name, String status) {
+        StringBuilder jpql = new StringBuilder("SELECT COUNT(c) FROM Course c WHERE 1=1");
+        if (name != null && !name.trim().isEmpty()) {
+            jpql.append(" AND LOWER(c.name) LIKE :name");
+        }
+        if (status != null) {
+            jpql.append(" AND c.status = :status");
+        } else {
+            jpql.append(" AND c.status = true");
+        }
+
+        TypedQuery<Long> query = em.createQuery(jpql.toString(), Long.class);
+        if (name != null && !name.trim().isEmpty()) {
+            query.setParameter("name", "%" + name.toLowerCase() + "%");
+        }
+        if (status != null) {
+            query.setParameter("status", Boolean.parseBoolean(status));
+        }
+        return query.getSingleResult();
     }
 
     @Override
     public long countCoursesByName(String name) {
-        return em.createQuery("SELECT COUNT(c) FROM Course c WHERE LOWER(c.name) LIKE :name", Long.class)
-                .setParameter("name", "%" + name.toLowerCase() + "%")
-                .getSingleResult();
+        return countCourses(name, null);
     }
 
     @Override
     public List<Course> getCoursesByName(String name) {
-        String jpql = "FROM Course c WHERE c.name = :name";
-        return em.createQuery(jpql, Course.class)
-                .setParameter("name", name)
+        return em.createQuery("SELECT c FROM Course c WHERE LOWER(c.name) LIKE :name AND c.status = true", Course.class)
+                .setParameter("name", "%" + name.toLowerCase() + "%")
                 .getResultList();
     }
-
 }

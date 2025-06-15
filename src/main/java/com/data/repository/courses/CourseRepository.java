@@ -6,7 +6,7 @@ import com.data.entity.Course;
 import java.util.List;
 
 public interface CourseRepository {
-    List<Course> getCourses(int page, int size);
+    List<Course> getCourses(int page, int size, String name, String status, String sort);
     CourseDTO getCourseById(int id);
     List<Course> findCoursesByName(String name, int page, int size);
     List<Course> getCoursesByName(String name);
@@ -18,6 +18,6 @@ public interface CourseRepository {
     List<Course> sortByName(String name);
     List<Course> sortByDuration(int duration);
     List<Course> sortById(int id);
-    long countCourses();
+    long countCourses(String name, String status);
     long countCoursesByName(String name);
 }

@@ -9,23 +9,23 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class CourseServiceImpl implements CourseService{
+public class CourseServiceImpl implements CourseService {
     @Autowired
     private CourseRepository courseRepository;
 
     @Override
-    public List<Course> getCourses(int page, int size) {
-        return courseRepository.getCourses(page, size);
-    }
-
-    @Override
-    public CourseDTO getCourseById(int id) {
-        return courseRepository.getCourseById(id);
+    public List<Course> getCourses(int page, int size, String name, String status, String sort) {
+        return courseRepository.getCourses(page, size, name, status, sort);
     }
 
     @Override
     public List<Course> findCoursesByName(String name, int page, int size) {
         return courseRepository.findCoursesByName(name, page, size);
+    }
+
+    @Override
+    public CourseDTO getCourseById(int id) {
+        return courseRepository.getCourseById(id);
     }
 
     @Override
@@ -69,8 +69,8 @@ public class CourseServiceImpl implements CourseService{
     }
 
     @Override
-    public long countCourses() {
-        return courseRepository.countCourses();
+    public long countCourses(String name, String status) {
+        return courseRepository.countCourses(name, status);
     }
 
     @Override
