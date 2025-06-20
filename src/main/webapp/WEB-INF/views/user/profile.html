@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Profile</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+</head>
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+</style>
+<body class="bg-gray-50 text-gray-800">
+
+<!-- Header -->
+<header th:replace="user/fragments/header :: header"></header>
+
+<!-- Main Content -->
+<div class="container mx-auto p-6">
+    <div class="flex justify-center mb-6">
+        <h1 class="text-6xl font-semibold text-yellow-500 space-y-4">My Profile</h1>
+    </div>
+    <div class="flex justify-end mb-6 mr-20">
+        <a href="/profile/change-password" class="text-right bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 items-end">Change Password</a>
+    </div>
+
+    <div class="bg-white p-6 rounded shadow-md mx-auto" style="width: 600px;">
+        <h2 class="text-lg font-semibold mb-4">Change Information</h2>
+        <form th:action="@{/profile/update}" method="post" th:object="${student}">
+            <div style="height: 90px;">
+                <label for="name" class="block text-sm font-medium text-gray-700">Name <span class="text-red-500">*</span></label>
+                <input type="text" id="name" th:field="*{name}" class="mt-1 block w-full border rounded px-3 py-2"/>
+                <p th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="text-red-500 text-sm mt-1"></p>
+            </div>
+            <div style="height: 90px;">
+                <label for="phone" class="block text-sm font-medium text-gray-700">Phone <span class="text-red-500">*</span></label>
+                <input type="tel" id="phone" th:field="*{phone}" class="mt-1 block w-full border rounded px-3 py-2"/>
+                <p th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}" class="text-red-500 text-sm mt-1"></p>
+            </div>
+            <div style="height: 90px;">
+                <label for="email" class="block text-sm font-medium text-gray-700">Email <span class="text-red-500">*</span></label>
+                <input type="email" id="email" th:field="*{email}" class="mt-1 block w-full border rounded px-3 py-2"/>
+                <p th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="text-red-500 text-sm mt-1"></p>
+            </div>
+            <div style="height: 90px;">
+                <label for="gender" class="block text-sm font-medium text-gray-700">Gender <span class="text-red-500">*</span></label>
+                <select id="gender" th:field="*{sex}" class="mt-1 block w-full border rounded px-3 py-2">
+                    <option th:value="true">Male</option>
+                    <option th:value="false">Female</option>
+                    <option th:value="null">Other</option>
+                </select>
+            </div>
+            <div style="height: 90px;">
+                <label for="dateOfBirth" class="block text-sm font-medium text-gray-700">Date of Birth <span class="text-red-500">*</span></label>
+                <input type="date" id="dateOfBirth" th:field="*{dob}" class="mt-1 block w-full border rounded px-3 py-2"/>
+                <p th:if="${#fields.hasErrors('dob')}" th:errors="*{dob}" class="text-red-500 text-sm mt-1"></p>
+            </div>
+            <div class="flex justify-center mt-4">
+                <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Save</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Change Password Modal -->
+<div th:if="${isForm != null && isForm}"
+     class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+    <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
+        <div class="flex justify-between items-center border-b pb-6">
+            <h2 class="text-2xl font-semibold text-gray-800">Change Password</h2>
+            <a th:href="@{/profile}" class="text-gray-500 hover:text-gray-700">
+                <i class="fas fa-times"></i>
+            </a>
+        </div>
+        <form th:action="@{/profile/change-password}" method="post" th:object="${password}">
+            <div class="mb-4" style="height: 75px;">
+                <label for="oldPassword" class="block text-sm font-medium text-gray-700">Old Password <span class="text-red-500">*</span></label>
+                <input type="password" id="oldPassword" th:field="*{oldPassword}" class="mt-1 block w-full border rounded px-3 py-2"/>
+                <p th:if="${#fields.hasErrors('oldPassword')}" th:errors="*{oldPassword}" class="text-red-500 text-sm mt-1"></p>
+            </div>
+            <div class="mb-4" style="height: 75px;">
+                <label for="newPassword" class="block text-sm font-medium text-gray-700">New Password <span class="text-red-500">*</span></label>
+                <input type="password" id="newPassword" th:field="*{newPassword}" class="mt-1 block w-full border rounded px-3 py-2"/>
+                <p th:if="${#fields.hasErrors('newPassword')}" th:errors="*{newPassword}" class="text-red-500 text-sm mt-1"></p>
+            </div>
+            <div class="mb-4" style="height: 75px;">
+                <label for="confirmNewPassword" class="block text-sm font-medium text-gray-700">Confirm New Password <span class="text-red-500">*</span></label>
+                <input type="password" id="confirmNewPassword" th:field="*{confirmNewPassword}" class="mt-1 block w-full border rounded px-3 py-2"/>
+                <p th:if="${#fields.hasErrors('confirmNewPassword')}" th:errors="*{confirmNewPassword}" class="text-red-500 text-sm mt-1"></p>
+            </div>
+            <div class="flex justify-center gap-4 mt-6 font-semibold">
+                <a th:href="@{/profile}" class="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300">Cancel</a>
+                <button type="submit" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600">Save</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+</body>
+</html>

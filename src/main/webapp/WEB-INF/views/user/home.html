@@ -6,60 +6,87 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
 </head>
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+</style>
 <body class="bg-gray-50 text-gray-800" th:object="${courses}">
 
 <!-- Header -->
 <header th:replace="user/fragments/header :: header"></header>
 
-<h1 class="text-5xl font-bold text-yellow-500 text-center mt-10 mb-6">List Course</h1>
+<h1 class="text-6xl font-semibold text-yellow-500 text-center mt-10 mb-6">List Course</h1>
 
-<form th:action="@{/home}" class="flex items-center justify-center rounded px-2 py-1">
-    <input type="text" name="name" th:value="${name}" placeholder="Search course by name"
-           class="outline-none px-4 py-1 rounded"/>
-    <button type="submit" class="ml-2 bg-blue-500 text-white px-4 py-1 rounded hover:bg-blue-600">
-        Search
-    </button>
-</form>
+<div class="flex justify-end mb-6 mr-60">
+    <form th:action="@{/home}">
+        <input type="text" name="name" th:value="${name}" placeholder="Search course by name"
+               class="outline-none px-4 py-1 rounded"/>
+        <button type="submit" class="ml-2 bg-blue-500 text-white px-4 py-1 rounded hover:bg-blue-600">
+            Search
+        </button>
+    </form>
+</div>
 
-<div class="flex space-y-4 justify-center items-center mb-6 gap-6">
-    <div class="bg-white rounded shadow p-4 flex flex-col items-left space-y-4" th:each="course : ${courses}">
-        <img th:src="${course.image}" alt="course image" width="265" height="186">
-        <div class="mb-3">
-            <p class="text-[#FF4B26] text-sm font-medium" th:text="${course.name}"></p>
-            <p class="text-green-600 text-xs mb-2 font-bold">Let's explore</p>
-        </div>
-        <div class="mb-3">
-            <p class="text-sm" th:text="${'Duration : ' + course.duration}"></p>
-            <p class="text-sm mb-4" th:text="${'Instructor : ' + course.instructor}"></p>
-        </div>
-        <div th:if="${enrolledCourseIds.contains(course.id)}">
-            <button class="w-full bg-green-500 text-white py-3 rounded cursor-not-allowed">Registered</button>
-        </div>
-        <div th:unless="${enrolledCourseIds.contains(course.id)}">
-            <a th:href="@{/home(confirmCourseId=${course.id})}"
-               class="w-full bg-green-600 text-white py-3 rounded hover:bg-green-700 flex gap-3 justify-center">
-                Registry <span>&gt;</span>
-            </a>
+<div class="flex flex-wrap justify-center items-start mb-6 gap-6 mt-6">
+    <div class="bg-white rounded-lg shadow-lg overflow-hidden"
+         style="width: 297px;"
+         th:each="course : ${courses}">
 
+        <!-- Course Image -->
+        <div class="relative">
+            <img th:src="${course.image}"
+                 alt="course image"
+                 class="w-full h-48 object-cover">
+        </div>
+
+        <!-- Course Content -->
+        <div class="p-4">
+            <!-- Course Title -->
+            <h3 class="text-[#FF4B26] text-lg font-bold mb-2 truncate"  th:text="${course.name}"></h3>
+            <p class="text-green-600 text-sm mb-3 font-semibold">Let's explore</p>
+
+            <!-- Course Details -->
+            <div class="mb-4 space-y-1">
+                <p class="text-gray-600 text-sm" th:text="${'Duration: ' + course.duration}"></p>
+                <p class="text-gray-600 text-sm" th:text="${'Instructor: ' + course.instructor}"></p>
+            </div>
+
+            <!-- Registration Button -->
+            <div class="mt-4">
+                <div th:if="${enrolledCourseIds != null and enrolledCourseIds.contains(course.id)}">
+                    <button class="w-full bg-green-500 text-white py-3 rounded-lg font-semibold cursor-not-allowed">
+                        Registered
+                    </button>
+                </div>
+                <div th:unless="${enrolledCourseIds != null and enrolledCourseIds.contains(course.id)}">
+                    <a th:href="@{/home(confirmCourseId=${course.id}, page=${currentPage}, name=${name})}"
+                       class="w-full bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 flex items-center justify-center gap-2 font-semibold text-decoration-none">
+                        Registry <span class="text-lg">></span>
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
 </div>
 
 <!-- Pagination -->
 <div class="flex justify-center mt-6 gap-2" th:if="${totalPages > 1}">
-    <a th:href="@{/home(page=${currentPage - 1})}"
+    <a th:href="@{/home(page=${currentPage - 1}, name=${name})}"
        class="px-2 py-1 border rounded hover:bg-gray-200"
        th:classappend="${currentPage == 1} ? 'pointer-events-none opacity-50' : ''">
         <
     </a>
     <span th:each="i : ${#numbers.sequence(1, totalPages)}">
-                <a th:href="@{/home(page=${i})}"
+                <a th:href="@{/home(page=${i}, name=${name})}"
                    th:text="${i}"
                    class="px-2 py-1 border rounded"
                    th:classappend="${i == currentPage} ? 'bg-blue-500 text-white' : 'hover:bg-gray-200'">
                 </a>
             </span>
-    <a th:href="@{/home(page=${currentPage + 1})}"
+    <a th:href="@{/home(page=${currentPage + 1}, name=${name})}"
        class="px-2 py-1 border rounded hover:bg-gray-200"
        th:classappend="${currentPage == totalPages} ? 'pointer-events-none opacity-50' : ''">
         >
@@ -76,10 +103,10 @@
         <h2 class="text-xl font-bold mb-2 text-left">Xác nhận</h2>
         <p class="text-left mb-6">Bạn có chắc chắn muốn đăng ký khóa học <span th:text="${courseName}" class="text-yellow-300"></span> không ?</p>
         <div class="flex justify-end gap-3">
-            <a th:href="@{/home}" class="px-4 py-2 border rounded bg-gray-200 hover:bg-gray-300 text-gray-800">
+            <a th:href="@{/home(page=${currentPage}, name=${name})}" class="px-4 py-2 border rounded bg-gray-200 hover:bg-gray-300 text-gray-800">
                 Hủy
             </a>
-            <form th:action="@{/home/enroll/{id}(id=${confirmCourseId})}" method="post">
+            <form th:action="@{/home/enroll/{id}(id=${confirmCourseId}, page=${currentPage}, name=${name})}" method="post">
                 <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
                     Ok
                 </button>

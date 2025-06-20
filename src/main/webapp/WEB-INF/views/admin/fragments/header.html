@@ -1,8 +1,10 @@
 <body th:fragment="header" class="shadow">
 <header class="bg-white flex items-center justify-between px-6 py-3">
     <!-- Logo -->
-    <img src="https://res.cloudinary.com/dagw0iovq/image/upload/v1749717954/a710yrmvpyeruqiezbbz.png"
-         alt="logo" width="126" height="45" style="margin-left: 83px">
+    <a href="/admin/dashboard">
+        <img src="https://res.cloudinary.com/dagw0iovq/image/upload/v1749717954/a710yrmvpyeruqiezbbz.png"
+             alt="logo" width="126" height="45" style="margin-left: 83px">
+    </a>
 
     <!-- Search input -->
     <input type="search" style="width: 1092px"
@@ -36,7 +38,7 @@
              class="w-8 h-8 rounded-full border border-gray-300">
 
         <!-- Logout -->
-        <a href="" class="text-gray-600 hover:text-red-500 flex items-center gap-1">
+        <a href="/auth/logout" class="text-gray-600 hover:text-red-500 flex items-center gap-1">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none"
                  viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

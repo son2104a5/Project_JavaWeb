@@ -7,8 +7,6 @@ import javax.validation.constraints.NotBlank;
 
 @Data
 public class LoginDTO {
-    private String username;
-
     @NotBlank(message = "Email không được để trống")
     @Email(message = "Email không hợp lệ")
     private String email;

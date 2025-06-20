@@ -11,6 +11,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.util.List;
@@ -31,21 +32,19 @@ public class CourseControllerAdmin {
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "status", required = false) String status,
             @RequestParam(value = "sort", required = false) String sort,
-            Model model) {
-        int currentPage = page < 1 ? 1 : page;
-        int offset = currentPage - 1;
+            Model model, HttpSession session) {
+        // Check if user is logged in
+        if (session.getAttribute("user") == null) {
+            return "redirect:/auth/login";
+        }
+        // Check if user has admin role
+        if (!"admin".equals(session.getAttribute("role"))) {
+            return "/templates/error/403";
+        }
 
-        List<Course> courseList = courseService.getCourses(offset, size, name, status, sort);
-        long totalItems = courseService.countCourses(name, status);
-        int totalPages = (int) Math.ceil((double) totalItems / size);
+        reloadPage(page, size, name, status, sort, model);
 
         model.addAttribute("course", new CourseDTO());
-        model.addAttribute("courses", courseList);
-        model.addAttribute("currentPage", currentPage);
-        model.addAttribute("totalPages", totalPages);
-        model.addAttribute("name", name);
-        model.addAttribute("status", status);
-        model.addAttribute("sort", sort);
         model.addAttribute("isAdd", false);
         model.addAttribute("isEdit", false);
         model.addAttribute("isDelete", false);
@@ -60,20 +59,8 @@ public class CourseControllerAdmin {
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "status", required = false) String status,
             @RequestParam(value = "sort", required = false) String sort) {
-        int currentPage = page < 1 ? 1 : page;
-        int offset = currentPage - 1;
 
-        List<Course> courseList;
-        long totalItems;
-        if (name != null && !name.trim().isEmpty()) {
-            courseList = courseService.findCoursesByName(name, offset, size);
-            totalItems = courseService.countCoursesByName(name);
-        } else {
-            courseList = courseService.getCourses(page, size, name, status, sort);
-            totalItems = courseService.countCourses(name, status);
-        }
-
-        int totalPages = (int) Math.ceil((double) totalItems / size);
+        reloadPage(page, size, name, status, sort, model);
 
         model.addAttribute("course", new CourseDTO());
         model.addAttribute("formAction", "/admin/courses/add");
@@ -82,9 +69,6 @@ public class CourseControllerAdmin {
         model.addAttribute("isAdd", true);
         model.addAttribute("isEdit", false);
         model.addAttribute("isDelete", false);
-        model.addAttribute("courses", courseList);
-        model.addAttribute("currentPage", currentPage);
-        model.addAttribute("totalPages", totalPages);
         return "/admin/courses/course-list";
     }
 
@@ -99,20 +83,8 @@ public class CourseControllerAdmin {
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "status", required = false) String status,
             @RequestParam(value = "sort", required = false) String sort) throws IOException {
-        int currentPage = page < 1 ? 1 : page;
-        int offset = currentPage - 1;
 
-        List<Course> courseList;
-        long totalItems;
-        if (name != null && !name.trim().isEmpty()) {
-            courseList = courseService.findCoursesByName(name, offset, size);
-            totalItems = courseService.countCoursesByName(name);
-        } else {
-            courseList = courseService.getCourses(page, size, name, status, sort);
-            totalItems = courseService.countCourses(name, status);
-        }
-
-        int totalPages = (int) Math.ceil((double) totalItems / size);
+        reloadPage(page, size, name, status, sort, model);
 
         if (result.hasErrors() || !courseService.getCoursesByName(courseDTO.getName()).isEmpty()) {
             model.addAttribute("formAction", "/admin/courses/add");
@@ -121,13 +93,10 @@ public class CourseControllerAdmin {
             model.addAttribute("isAdd", true);
             model.addAttribute("isEdit", false);
             model.addAttribute("isDelete", false);
-            model.addAttribute("courses", courseList);
-            model.addAttribute("currentPage", currentPage);
-            model.addAttribute("totalPages", totalPages);
             return "/admin/courses/course-list";
         }
 
-        if (courseDTO.getImage() != null && !courseDTO.getImage().isEmpty()) {
+        if (courseDTO.getImageFile() != null && !courseDTO.getImageFile().isEmpty()) {
             String imageUrl = cloudinaryService.uploadFile(courseDTO.getImageFile());
             courseDTO.setImage(imageUrl);
         }
@@ -145,29 +114,16 @@ public class CourseControllerAdmin {
             @RequestParam(value = "size", defaultValue = "8") int size,
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "status", required = false) String status,
-            @RequestParam(value = "sort", required = false) String sort) {
+            @RequestParam(value = "sort", required = false) String sort, HttpSession session) {
         CourseDTO courseDTO = courseService.getCourseById(id);
         if (courseDTO == null) {
             model.addAttribute("isAdd", false);
             model.addAttribute("isEdit", false);
             model.addAttribute("isDelete", false);
-            return courses(page, size, name, status, sort, model);
+            return courses(page, size, name, status, sort, model, session);
         }
 
-        int currentPage = page < 1 ? 1 : page;
-        int offset = currentPage - 1;
-
-        List<Course> courseList;
-        long totalItems;
-        if (name != null && !name.trim().isEmpty()) {
-            courseList = courseService.findCoursesByName(name, offset, size);
-            totalItems = courseService.countCoursesByName(name);
-        } else {
-            courseList = courseService.getCourses(page, size, name, status, sort);
-            totalItems = courseService.countCourses(name, status);
-        }
-
-        int totalPages = (int) Math.ceil((double) totalItems / size);
+        reloadPage(page, size, name, status, sort, model);
 
         model.addAttribute("course", courseDTO);
         model.addAttribute("formAction", "/admin/courses/update/" + id);
@@ -176,9 +132,6 @@ public class CourseControllerAdmin {
         model.addAttribute("isAdd", false);
         model.addAttribute("isEdit", true);
         model.addAttribute("isDelete", false);
-        model.addAttribute("courses", courseList);
-        model.addAttribute("currentPage", currentPage);
-        model.addAttribute("totalPages", totalPages);
         return "/admin/courses/course-list";
     }
 
@@ -194,20 +147,8 @@ public class CourseControllerAdmin {
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "status", required = false) String status,
             @RequestParam(value = "sort", required = false) String sort) throws IOException {
-        int currentPage = page < 1 ? 1 : page;
-        int offset = currentPage - 1;
 
-        List<Course> courseList;
-        long totalItems;
-        if (name != null && !name.trim().isEmpty()) {
-            courseList = courseService.findCoursesByName(name, offset, size);
-            totalItems = courseService.countCoursesByName(name);
-        } else {
-            courseList = courseService.getCourses(page, size, name, status, sort);
-            totalItems = courseService.countCourses(name, status);
-        }
-
-        int totalPages = (int) Math.ceil((double) totalItems / size);
+        reloadPage(page, size, name, status, sort, model);
 
         List<Course> matchedCourses = courseService.getCoursesByName(courseDTO.getName());
         boolean isDuplicate = matchedCourses.stream().anyMatch(c -> c.getId() != id);
@@ -219,13 +160,10 @@ public class CourseControllerAdmin {
             model.addAttribute("isAdd", false);
             model.addAttribute("isEdit", true);
             model.addAttribute("isDelete", false);
-            model.addAttribute("courses", courseList);
-            model.addAttribute("currentPage", currentPage);
-            model.addAttribute("totalPages", totalPages);
             return "/admin/courses/course-list";
         }
 
-        if (courseDTO.getImage() != null && !courseDTO.getImage().isEmpty()) {
+        if (courseDTO.getImageFile() != null && !courseDTO.getImageFile().isEmpty()) {
             String imageUrl = cloudinaryService.uploadFile(courseDTO.getImageFile());
             courseDTO.setImage(imageUrl);
         }
@@ -238,7 +176,7 @@ public class CourseControllerAdmin {
     @GetMapping("/delete/confirm/{id}")
     public String showDeleteConfirm(
             @PathVariable("id") int id,
-            Model model,
+            Model model, HttpSession session,
             @RequestParam(value = "page", defaultValue = "1") int page,
             @RequestParam(value = "size", defaultValue = "8") int size,
             @RequestParam(value = "name", required = false) String name,
@@ -249,32 +187,16 @@ public class CourseControllerAdmin {
             model.addAttribute("isAdd", false);
             model.addAttribute("isEdit", false);
             model.addAttribute("isDelete", false);
-            return courses(page, size, name, status, sort, model);
+            return courses(page, size, name, status, sort, model, session);
         }
 
-        int currentPage = page < 1 ? 1 : page;
-        int offset = currentPage - 1;
+        reloadPage(page, size, name, status, sort, model);
 
-        List<Course> courseList;
-        long totalItems;
-        if (name != null && !name.trim().isEmpty()) {
-            courseList = courseService.findCoursesByName(name, offset, size);
-            totalItems = courseService.countCoursesByName(name);
-        } else {
-            courseList = courseService.getCourses(page, size, name, status, sort);
-            totalItems = courseService.countCourses(name, status);
-        }
-
-        int totalPages = (int) Math.ceil((double) totalItems / size);
-
-        model.addAttribute("course", new CourseDTO());
+        model.addAttribute("course", courseDTO);
         model.addAttribute("deleteCourseId", id);
         model.addAttribute("isAdd", false);
         model.addAttribute("isEdit", false);
         model.addAttribute("isDelete", true);
-        model.addAttribute("courses", courseList);
-        model.addAttribute("currentPage", currentPage);
-        model.addAttribute("totalPages", totalPages);
         return "/admin/courses/course-list";
     }
 
@@ -289,5 +211,39 @@ public class CourseControllerAdmin {
             redirectAttributes.addFlashAttribute("successMessage", "Xóa khóa học thành công!");
         }
         return "redirect:/admin/courses";
+    }
+
+    @GetMapping("/recovery/{id}")
+    public String recoveryCourse(
+            @PathVariable("id") int id,
+            RedirectAttributes redirectAttributes) {
+        CourseDTO courseDTO = courseService.getCourseById(id);
+        if (courseDTO != null) {
+            courseDTO.setStatus(true);
+            courseService.update(courseDTO);
+            redirectAttributes.addFlashAttribute("successMessage", "Khôi phục khóa học thành công!");
+        }
+        return "redirect:/admin/courses";
+    }
+
+    public void reloadPage(int page, int size, String name, String status, String sort, Model model) {
+        int currentPage = Math.max(page, 1);
+        int offset = (currentPage - 1) * size; // Sửa ở đây
+
+        // Xử lý chuỗi rỗng
+        name = (name != null && name.trim().isEmpty()) ? null : name;
+        status = (status != null && status.trim().isEmpty()) ? null : status;
+        sort = (sort != null && sort.trim().isEmpty()) ? null : sort;
+
+        List<Course> courseList = courseService.getCourses(offset, size, name, status, sort);
+        long totalItems = courseService.countCourses(name, status);
+        int totalPages = (int) Math.ceil((double) totalItems / size);
+
+        model.addAttribute("courses", courseList);
+        model.addAttribute("name", name);
+        model.addAttribute("status", status);
+        model.addAttribute("sort", sort);
+        model.addAttribute("currentPage", currentPage);
+        model.addAttribute("totalPages", totalPages);
     }
 }

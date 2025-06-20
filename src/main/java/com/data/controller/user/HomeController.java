@@ -2,6 +2,7 @@ package com.data.controller.user;
 
 import com.data.dto.CourseDTO;
 import com.data.dto.LoginDTO;
+import com.data.dto.StudentDTO;
 import com.data.entity.Course;
 import com.data.entity.Enrollment;
 import com.data.entity.Student;
@@ -29,9 +30,6 @@ public class HomeController {
     private EnrollmentService enrollmentService;
 
     @Autowired
-    private CloudinaryService cloudinaryService;
-
-    @Autowired
     private StudentService studentService;
 
     @GetMapping
@@ -42,27 +40,28 @@ public class HomeController {
             @RequestParam(value = "confirmCourseId", required = false) Integer confirmCourseId,
             Model model,
             HttpSession session) {
-        if (session.getAttribute("user") == null) {
-            return "redirect:/user/login";
-        }
         int currentPage = page < 1 ? 1 : page;
-        int offset = currentPage - 1;
 
-        List<Course> courseList = courseService.getCourses(offset, size, name, null, null);
+        List<Course> courseList = courseService.getCourses(page, size, name, null, null);
         long totalItems = courseService.countCourses(name, null);
         int totalPages = (int) Math.ceil((double) totalItems / size);
 
-        String email = ((LoginDTO) session.getAttribute("user")).getEmail();
-        Student student = studentService.findStudentByUsernameOrEmail(null, email);
-        List<Enrollment> enrollments = enrollmentService.getEnrollmentsByStudentId(student.getId());
-        Set<Integer> enrolledCourseIds = enrollments.stream()
-                .map(e -> e.getCourse().getId())
-                .collect(Collectors.toSet());
+        Set<Integer> enrolledCourseIds = null;
+        if (session.getAttribute("user") != null) {
+            String email = ((LoginDTO) session.getAttribute("user")).getEmail();
+            StudentDTO student = studentService.findStudentByEmail(email);
+            if (student != null) {
+                List<Enrollment> enrollments = enrollmentService.getEnrollmentsByStudentId(student.getId());
+                enrolledCourseIds = enrollments.stream()
+                        .map(e -> e.getCourse().getId())
+                        .collect(Collectors.toSet());
 
-        if (confirmCourseId != null && !enrolledCourseIds.contains(confirmCourseId)) {
-            CourseDTO course = courseService.getCourseById(confirmCourseId);
-            if (course != null) {
-                model.addAttribute("courseName", course.getName());
+                if (confirmCourseId != null && !enrolledCourseIds.contains(confirmCourseId)) {
+                    CourseDTO course = courseService.getCourseById(confirmCourseId);
+                    if (course != null) {
+                        model.addAttribute("courseName", course.getName());
+                    }
+                }
             }
         }
 
@@ -79,7 +78,7 @@ public class HomeController {
     public String addEnrollment(@PathVariable int id, HttpSession session) {
         // Check if user is logged in
         if (session.getAttribute("user") == null) {
-            return "redirect:/user/login";
+            return "redirect:/auth/login";
         }
 
         CourseDTO course = courseService.getCourseById(id);
@@ -88,7 +87,7 @@ public class HomeController {
         }
         LoginDTO user = (LoginDTO) session.getAttribute("user");
         String email = user.getEmail();
-        Student student = studentService.findStudentByUsernameOrEmail(null, email);
+        StudentDTO student = studentService.findStudentByEmail(email);
         if (student == null) {
             return "redirect:/home";
         }

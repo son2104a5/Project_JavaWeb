@@ -17,7 +17,7 @@
     </div>
     <!-- Right: Form -->
     <div class="w-1/2 bg-white flex flex-col justify-center p-8">
-        <form th:action="@{/admin/register}" method="post" th:object="${student}">
+        <form th:action="@{/auth/register}" method="post" th:object="${student}">
             <h2 class="text-2xl font-bold text-center text-gray-800 h-20">Sign up</h2>
             <div style="height: 75px">
                 <input type="text" th:field="*{name}" placeholder="full name" class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400" />
@@ -25,7 +25,7 @@
                    class="text-red-500 text-sm mt-1"></p>
             </div>
             <div style="height: 75px">
-                <input type="text" th:field="*{dob}" placeholder="BOD(dd/mm/yyyy)" class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400" />
+                <input type="date" th:field="*{dob}" placeholder="BOD(dd/mm/yyyy)" class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400" />
                 <p th:if="${#fields.hasErrors('dob')}" th:errors="*{dob}"
                    class="text-red-500 text-sm mt-1"></p>
             </div>
@@ -46,17 +46,12 @@
                    class="text-red-500 text-sm mt-1"></p>
             </div>
             <div style="height: 75px">
-                <input type="text" th:field="*{username}" placeholder="username" class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400" />
-                <p th:if="${#fields.hasErrors('username')}" th:errors="*{username}"
-                   class="text-red-500 text-sm mt-1"></p>
-            </div>
-            <div style="height: 75px">
                 <input type="password" th:field="*{password}" placeholder="password" class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400" />
                 <p th:if="${#fields.hasErrors('password')}" th:errors="*{password}"
                    class="text-red-500 text-sm mt-1"></p>
             </div>
             <div class="flex items-center justify-between text-sm h-12">
-                <span>Already have an account, <a th:href="@{/admin/login}" class="text-blue-500 hover:underline font-semibold">Login</a></span>
+                <span>Already have an account, <a th:href="@{/auth/login}" class="text-blue-500 hover:underline font-semibold">Login</a></span>
             </div>
             <button type="submit" class="w-full bg-blue-600 text-white font-bold py-3 rounded hover:bg-blue-700 transition duration-300">Register</button>
         </form>

@@ -24,8 +24,8 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public Student findStudentByUsernameOrEmail(String username, String email) {
-        return studentRepository.findStudentByUsernameOrEmail(username, email);
+    public StudentDTO findStudentByEmail(String email) {
+        return studentRepository.findStudentByEmail(email);
     }
 
     @Override
@@ -34,7 +34,27 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public void deleteById(int id) {
-        studentRepository.deleteById(id);
+    public void update(StudentDTO studentDTO) {
+        studentRepository.update(studentDTO);
+    }
+
+    @Override
+    public List<Student> getStudentsByPage(int page, int size, String sort, String name) {
+        return studentRepository.getStudentsByPage(page, size, sort, name);
+    }
+
+    @Override
+    public long countTotalStudents() {
+        return studentRepository.countTotalStudents();
+    }
+
+    @Override
+    public void lockAccount(int id) {
+        studentRepository.lockAccount(id);
+    }
+
+    @Override
+    public StudentDTO findStudentByPhone(String phone) {
+        return studentRepository.findStudentByPhone(phone);
     }
 }

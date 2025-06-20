@@ -20,4 +20,5 @@ public interface CourseRepository {
     List<Course> sortById(int id);
     long countCourses(String name, String status);
     long countCoursesByName(String name);
+    List<Course> getCourseByStudentId(int studentId);
 }

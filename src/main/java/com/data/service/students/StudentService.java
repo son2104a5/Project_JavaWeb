@@ -8,8 +8,11 @@ import java.util.List;
 public interface StudentService {
     List<Student> findAllStudents();
     Student findStudentById(int id);
-    Student findStudentByUsernameOrEmail(String username, String email);
+    StudentDTO findStudentByEmail(String email);
     StudentDTO save(StudentDTO studentDTO);
-    //    StudentDTO update(StudentDTO studentDTO);
-    void deleteById(int id);
+    void update(StudentDTO studentDTO);
+    List<Student> getStudentsByPage(int page, int size, String sort, String name);
+    long countTotalStudents();
+    void lockAccount(int id);
+    StudentDTO findStudentByPhone(String phone);
 }

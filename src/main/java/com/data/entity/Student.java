@@ -1,5 +1,6 @@
 package com.data.entity;
 
+import com.data.dto.StudentDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,13 +19,11 @@ public class Student {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(nullable = false, unique = true)
-    private String username;
-
     @Column(nullable = false)
     private String name;
 
     @Column(nullable = false)
+    @Temporal(TemporalType.DATE)
     private Date dob;
 
     @Column(nullable = false, unique = true)
@@ -43,11 +42,15 @@ public class Student {
     private LocalDate createdAt = LocalDate.now();
 
     @Column(nullable = false)
-    private Boolean role;
+    private Boolean role = false;
 
     @Column(name = "status", columnDefinition = "boolean default true")
     private Boolean status = true;
 
     @Column(name = "image", columnDefinition = "varchar(500) default null")
     private String image;
+
+    @ManyToOne
+    @JoinColumn(name = "course_id")
+    private Course course;
 }

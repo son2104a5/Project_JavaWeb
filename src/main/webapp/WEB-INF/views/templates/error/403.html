@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>403 - Truy cập bị từ chối</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+</head>
+<body class="bg-gradient-to-br from-red-100 to-yellow-100 min-h-screen flex items-center justify-center">
+<div class="text-center p-8 bg-white rounded-2xl shadow-xl max-w-lg w-full">
+    <div class="text-yellow-500 text-7xl mb-4">
+        <i class="fas fa-ban"></i>
+    </div>
+    <h1 class="text-5xl font-bold text-gray-800">403</h1>
+    <p class="text-xl text-gray-600 mt-2">Không được phép truy cập vào trang này 🚫</p>
+    <p class="text-sm text-gray-500 mt-1">Bạn có thể không có quyền hoặc đang cố gắng truy cập vùng cấm 😅</p>
+
+    <a href="/home"
+       class="mt-6 inline-block bg-yellow-500 hover:bg-yellow-600 text-white font-medium px-6 py-2 rounded-full shadow transition duration-300 ease-in-out">
+        <i class="fas fa-home mr-2"></i>Về trang chủ
+    </a>
+</div>
+</body>
+</html>

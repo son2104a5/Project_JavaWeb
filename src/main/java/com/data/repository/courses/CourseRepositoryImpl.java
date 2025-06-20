@@ -56,7 +56,7 @@ public class CourseRepositoryImpl implements CourseRepository {
         if (status != null) {
             query.setParameter("status", Boolean.parseBoolean(status));
         }
-        return query.setFirstResult(page * size)
+        return query.setFirstResult(page) // Sửa ở đây
                 .setMaxResults(size)
                 .getResultList();
     }
@@ -159,6 +159,13 @@ public class CourseRepositoryImpl implements CourseRepository {
     @Override
     public long countCoursesByName(String name) {
         return countCourses(name, null);
+    }
+
+    @Override
+    public List<Course> getCourseByStudentId(int studentId) {
+        return em.createQuery("SELECT c FROM Course c JOIN enrollment e ON c.id = e.course_id WHERE e.student.id = :studentId", Course.class)
+                .setParameter("studentId", studentId)
+                .getResultList();
     }
 
     @Override

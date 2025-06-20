@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Data
@@ -32,4 +33,10 @@ public class Course {
     private String image;
 
     private Boolean status = true;
+
+    @OneToMany(mappedBy = "course")
+    private List<Student> students;
+
+    @OneToMany(mappedBy = "course", fetch = FetchType.LAZY)
+    private List<Enrollment> enrollments;
 }

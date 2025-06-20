@@ -12,8 +12,7 @@ import java.util.Date;
 
 @Data
 public class StudentDTO {
-    @NotBlank(message = "Tên tài khoản không được để trống")
-    private String username;
+    private int id;
 
     @NotBlank(message = "Tên không được để trống")
     private String name;
@@ -38,4 +37,6 @@ public class StudentDTO {
     private Boolean role;
 
     private MultipartFile image;
+
+    private Boolean status;
 }

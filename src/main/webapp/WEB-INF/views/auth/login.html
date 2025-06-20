@@ -9,7 +9,7 @@
 <div class="flex bg-gray-900 rounded-lg shadow-lg overflow-hidden max-w-4xl w-full">
     <!-- Left: Image -->
     <div class="w-1/2 bg-gray-900 flex items-center justify-center p-8">
-        <img src="https://res-console.cloudinary.com/dagw0iovq/thumbnails/v1/image/upload/v1749710111/d2h4MmFxZWRnc2xiaHpibDlteXE=/preview"
+        <img src="https://res.cloudinary.com/dagw0iovq/image/upload/v1749710111/whx2aqedgslbhzbl9myq.png"
              alt="People"
              class="rounded-lg object-cover h-96 w-full max-w-xs shadow-lg" />
     </div>
@@ -23,7 +23,7 @@
                 Clarity gives you the blocks and components you need to create a truly professional website.
             </p>
         </div>
-        <form th:action="@{/admin/login}" method="post" th:object="${student}"
+        <form th:action="@{/auth/login}" method="post" th:object="${student}"
               class="bg-white rounded-xl p-8 shadow space-y-4 w-full max-w-sm mx-auto">
             <h3 class="text-xl font-semibold text-center mb-2">Sign in</h3>
             <div style="height: 60px">
@@ -40,7 +40,7 @@
             </div>
             <div class="flex justify-between items-center text-sm mt-2">
                     <span>Don't have an account,
-                        <a th:href="@{/admin/register}" class="text-red-500 font-semibold hover:underline">Register</a>
+                        <a th:href="@{/auth/register}" class="text-red-500 font-semibold hover:underline">Register</a>
                     </span>
             </div>
             <button type="submit"

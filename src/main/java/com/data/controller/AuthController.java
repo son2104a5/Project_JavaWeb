@@ -11,111 +11,73 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
 @Controller
+@RequestMapping("/auth")
 public class AuthController {
     @Autowired
     private StudentService studentService;
 
-    @GetMapping("/admin/register")
-    public String registerAdminForm(Model model) {
+    @GetMapping("/register")
+    public String registerForm(Model model) {
         model.addAttribute("student", new StudentDTO());
-        return "/admin/auth/register";
+        return "/auth/register";
     }
 
-    @PostMapping("/admin/register")
-    public String registerAdminConfirm(@Valid @ModelAttribute("student") StudentDTO studentDTO, BindingResult result) {
+    @PostMapping("/register")
+    public String registerConfirm(@Valid @ModelAttribute("student") StudentDTO studentDTO, BindingResult result) {
         if (result.hasErrors()) {
-            return "/admin/auth/register";
+            return "/auth/register";
         }
-        if (studentService.findStudentByUsernameOrEmail(studentDTO.getUsername(), studentDTO.getEmail()) != null) {
-            if (result.hasFieldErrors("username")) {
-                result.rejectValue("username", "error.username", "Tên tài khoản đã tồn tại");
-            } else if (result.hasFieldErrors("email")) {
+        if (studentService.findStudentByEmail(studentDTO.getEmail()) != null) {
+            if (result.hasFieldErrors("email")) {
                 result.rejectValue("email", "error.email", "Email đã tồn tại");
             }
+            return "/auth/register";
         }
-        studentDTO.setRole(true);
+        if (studentService.findStudentByPhone(studentDTO.getPhone()) != null) {
+            result.rejectValue("phone", "error.phone", "Số điện thoại đã tồn tại");
+            return "/auth/register";
+        }
         studentService.save(studentDTO);
-        return "redirect:/admin/login";
+        return "redirect:/auth/login";
     }
 
-    @GetMapping("/admin/logout")
-    public String logoutAdmin(Model model, HttpSession session) {
-        session.removeAttribute("user");
-        return "/admin/auth/login";
-    }
-
-    @GetMapping("admin/login")
-    public String loginAdminForm(Model model) {
+    @GetMapping("/login")
+    public String loginForm(Model model) {
         model.addAttribute("student", new LoginDTO());
-        return "/admin/auth/login";
+        return "/auth/login";
     }
 
-    @PostMapping("admin/login")
-    public String loginAdminConfirm(@ModelAttribute("student") @Valid LoginDTO loginDTO, BindingResult result, HttpSession session) {
+    @PostMapping("/login")
+    public String loginConfirm(@ModelAttribute("student") @Valid LoginDTO loginDTO, BindingResult result, HttpSession session) {
         if (result.hasErrors()) {
-            return "/admin/auth/login";
+            return "/auth/login";
         }
-        Student existingStudent = studentService.findStudentByUsernameOrEmail(loginDTO.getUsername(), loginDTO.getEmail());
+        StudentDTO existingStudent = studentService.findStudentByEmail(loginDTO.getEmail());
         if (existingStudent == null || !existingStudent.getPassword().equals(loginDTO.getPassword())) {
             result.rejectValue("password", "error.password",  "Email hoặc mật khẩu không đúng");
-            return "/admin/auth/login";
+            return "/auth/login";
+        }
+        if (!existingStudent.getStatus()) {
+            result.rejectValue("password", "error.password", "Tài khoản của bạn đã bị khóa");
+            return "/auth/login";
         }
         session.setAttribute("user", loginDTO);
-        return "redirect:/admin/dashboard";
-    }
-
-    @GetMapping("/user/register")
-    public String registerUserForm(Model model) {
-        model.addAttribute("student", new StudentDTO());
-        return "/user/auth/register";
-    }
-
-    @PostMapping("/user/register")
-    public String registerUserConfirm(@Valid @ModelAttribute("student") StudentDTO studentDTO, BindingResult result) {
-        if (result.hasErrors()) {
-            System.out.println(result.getAllErrors());
-            return "/user/auth/register";
+        if (existingStudent.getRole()) {
+            return "redirect:/admin/dashboard";
+        } else {
+            return "redirect:/home";
         }
-        if (studentService.findStudentByUsernameOrEmail(studentDTO.getUsername(), studentDTO.getEmail()) != null) {
-            if (result.hasFieldErrors("username")) {
-                result.rejectValue("username", "error.username", "Tên tài khoản đã tồn tại");
-            } else if (result.hasFieldErrors("email")) {
-                result.rejectValue("email", "error.email", "Email đã tồn tại");
-            }
-        }
-        studentDTO.setRole(false);
-        studentService.save(studentDTO);
-        return "redirect:/user/login";
     }
 
-    @GetMapping("/user/login")
-    public String loginUserForm(Model model) {
-        model.addAttribute("student", new LoginDTO());
-        return "/user/auth/login";
-    }
-
-    @PostMapping("/user/login")
-    public String loginUserConfirm(@ModelAttribute("student") LoginDTO loginDTO, BindingResult result, HttpSession session) {
-        if (result.hasErrors()) {
-            return "/user/auth/login";
-        }
-        Student existingStudent = studentService.findStudentByUsernameOrEmail(loginDTO.getUsername(), loginDTO.getEmail());
-        if (existingStudent == null || !existingStudent.getPassword().equals(loginDTO.getPassword())) {
-            result.rejectValue("password", "error.password",  "Email hoặc mật khẩu không đúng");
-            return "/user/auth/login";
-        }
-        session.setAttribute("user", loginDTO);
-        return "redirect:/home";
-    }
-
-    @GetMapping("/user/logout")
-    public String logoutUser(Model model, HttpSession session) {
+    @GetMapping("/logout")
+    public String logout(Model model, HttpSession session) {
         session.removeAttribute("user");
-        return "redirect:/user/login";
+        return "redirect:/auth/login";
     }
 }

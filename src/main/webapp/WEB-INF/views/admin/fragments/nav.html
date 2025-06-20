@@ -1,15 +1,15 @@
 <aside class="w-64 border-r p-6" th:fragment="sidebar">
-    <nav class="space-y-4">
-        <a href="/admin/dashboard" class="flex items-center gap-2 text-gray-700 hover:text-blue-600">
+    <nav class="space-y-4 font-semibold text-gray-800">
+        <a href="/admin/dashboard" th:classappend="${#request.requestURI.contains('/admin/dashboard') ? 'text-blue-600': ''}" class="flex items-center gap-2 hover:text-blue-600">
             <span>🏠</span> <span>Dashboard</span>
         </a>
-        <a href="/admin/students" class="flex items-center gap-2 text-gray-700 hover:text-blue-600">
+        <a href="/admin/students" th:classappend="${#request.requestURI.contains('/admin/students') ? 'text-blue-600': ''}" class="flex items-center gap-2 hover:text-blue-600">
             <span>👨‍🎓</span> <span>Students</span>
         </a>
-        <a href="/admin/courses" class="flex items-center gap-2 text-gray-700 hover:text-blue-600">
+        <a href="/admin/courses" th:classappend="${#request.requestURI.contains('/admin/courses') ? 'text-blue-600': ''}" class="flex items-center gap-2 hover:text-blue-600">
             <span>📘</span> <span>Courses</span>
         </a>
-        <a href="/admin/enrollments" class="flex items-center gap-2 text-gray-700 hover:text-blue-600">
+        <a href="/admin/enrollments" th:classappend="${#request.requestURI.contains('/admin/enrollments') ? 'text-blue-600': ''}" class="flex items-center gap-2 hover:text-blue-600">
             <span>👥</span> <span>Enrollment</span>
         </a>
     </nav>

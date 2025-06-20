@@ -2,14 +2,101 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Enrollment Manager</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha512-..." crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+          integrity="sha512-..." crossorigin="anonymous" referrerpolicy="no-referrer"/>
 </head>
 <body class="bg-gray-100 text-sm text-gray-800">
 <header th:replace="admin/fragments/header :: header"></header>
 <div class="flex min-h-screen">
     <aside th:replace="admin/fragments/nav :: sidebar"></aside>
+
+    <!-- Main content -->
+    <main class="flex-1 p-6">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-xl font-semibold">Enrollment Manager</h2>
+        </div>
+
+        <!-- Filter -->
+        <div class="flex flex-wrap gap-4 mb-4 items-center justify-end">
+            <form th:action="@{/admin/enrollments}" method="get" class="flex gap-4 items-center">
+                <select name="filter" class="border rounded px-3 py-2" onchange="this.form.submit()">
+                    <option th:selected="${filter == null}" value="">Select By Status</option>
+                    <option th:selected="${filter == 'WAITING'}" value="WAITING">WAITING</option>
+                    <option th:selected="${filter == 'DENIED'}" value="DENIED">DENIED</option>
+                    <option th:selected="${filter == 'CANCEL'}" value="CANCEL">CANCEL</option>
+                    <option th:selected="${filter == 'CONFIRM'}" value="CONFIRM">CONFIRM</option>
+                </select>
+                <div class="flex items-center border rounded px-2 py-1">
+                    <input type="text" name="name" th:value="${name}" placeholder="Search course by name"
+                           class="outline-none px-4 py-1 rounded"/>
+                    <button type="submit" class="ml-2 bg-blue-500 text-white px-4 py-1 rounded hover:bg-blue-600">
+                        Search
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Enrollment table -->
+        <div class="bg-white rounded shadow">
+            <table class="w-full text-left">
+                <thead class="bg-gray-200">
+                <tr>
+                    <th class="p-3 text-gray-600 font-semibold">Enrollment ID</th>
+                    <th class="p-3 text-gray-600 font-semibold">Student Name</th>
+                    <th class="p-3 text-gray-600 font-semibold">Course Name</th>
+                    <th class="p-3 text-gray-600 font-semibold">Registered Date</th>
+                    <th class="p-3 text-gray-600 font-semibold">Status</th>
+                    <th class="p-3 text-gray-600 font-semibold">Action</th>
+                </tr>
+                </thead>
+                <tbody th:each="enrollment : ${enrollments}">
+                <tr class="border-b hover:bg-gray-50 font-semibold text-gray-800">
+                    <td class="p-3" th:text="'E' + ${#numbers.formatInteger(enrollment.id, 4)}"></td>
+                    <td class="p-3" th:text="${enrollment.student.name}"></td>
+                    <td class="p-3" th:text="${enrollment.course.name}"></td>
+                    <td class="p-3" th:text="${enrollment.registeredAt}"></td>
+                    <td
+                            class="p-3" th:text="${enrollment.status}"
+                            th:classappend="${enrollment.status.name() == 'WAITING' ? 'text-[#FFD500]' : (enrollment.status.name() == 'DENIED' ? 'text-[#FF0909]' : (enrollment.status.name() == 'CANCEL' ? 'text-[#FF0909]' : 'text-[#12B347]'))}">
+                    </td>
+                    <td class="p-3 flex gap-3" th:if="${enrollment.status.name() == 'WAITING'}">
+                        <a th:href="@{/admin/enrollments/confirm/{id}(id=${enrollment.id}, page=${currentPage}, filter=${filter}, name=${name})}"
+                           class="px-3 py-1 rounded border border-[#00D936] text-[#00D936] bg-[#B5FFBD] hover:bg-opacity-80 transition duration-200 cursor-pointer">
+                            CONFIRM
+                        </a>
+                        <a th:href="@{/admin/enrollments/denied/{id}(id=${enrollment.id}, page=${currentPage}, filter=${filter}, name=${name})}"
+                           class="px-3 py-1 rounded border bg-[#FFE3B5] border-[#FF9D00] text-[#FF9D00] hover:bg-opacity-80 transition duration-200 cursor-pointer">
+                            DENIED
+                        </a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        <div class="flex justify-center mt-6 gap-2" th:if="${totalPages > 0}">
+            <a th:href="@{/admin/enrollments(page=${currentPage - 1}, filter=${filter}, name=${name})}"
+               class="px-2 py-1 border rounded hover:bg-gray-200"
+               th:classappend="${currentPage == 1} ? 'pointer-events-none opacity-50' : ''">
+                <
+            </a>
+            <span th:each="i : ${#numbers.sequence(1, totalPages)}">
+                <a th:href="@{/admin/enrollments(page=${i}, filter=${filter}, name=${name})}"
+                   th:text="${i}"
+                   class="px-2 py-1 border rounded"
+                   th:classappend="${i == currentPage} ? 'bg-blue-500 text-white' : 'hover:bg-gray-200'">
+                </a>
+            </span>
+            <a th:href="@{/admin/enrollments(page=${currentPage + 1}, filter=${filter}, name=${name})}"
+               class="px-2 py-1 border rounded hover:bg-gray-200"
+               th:classappend="${currentPage == totalPages} ? 'pointer-events-none opacity-50' : ''">
+                >
+            </a>
+        </div>
+    </main>
 </div>
 </body>
 </html>

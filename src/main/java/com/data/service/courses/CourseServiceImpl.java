@@ -82,4 +82,9 @@ public class CourseServiceImpl implements CourseService {
     public List<Course> getCoursesByName(String name) {
         return courseRepository.getCoursesByName(name);
     }
+
+    @Override
+    public List<Course> getCourseByStudentId(int studentId) {
+        return courseRepository.getCourseByStudentId(studentId);
+    }
 }
